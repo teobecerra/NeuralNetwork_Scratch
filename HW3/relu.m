@@ -1,0 +1,93 @@
+%ReLU
+
+[xTrain, tTrain, xValid, tValid, xTest, tTest] = LoadCIFAR(3);
+
+inputSize = [ 32 32 3];
+nClasses = 10;
+
+layers1 = [
+    imageInputLayer(inputSize)
+    %batchNormalizationLayer
+    fullyConnectedLayer(50)
+    reluLayer
+    fullyConnectedLayer(50)
+    reluLayer
+    fullyConnectedLayer(nClasses)
+    softmaxLayer
+    classificationLayer];
+
+options1 = trainingOptions('sgdm', ...
+           'Momentum',0.9, ...
+           'MaxEpochs',400, ...
+           'Plots','Training-Progress', ...
+           'MiniBatchSize', 8192, ...
+           'InitialLearnRate',0.001, ...
+           'Shuffle','every-epoch', ...
+           'ValidationPatience', 3, ...
+           'ValidationFrequency', 30,...
+            'ValidationData', {xValid,tValid});
+          
+net1 = trainNetwork(xTrain,tTrain,layers1,options1);
+
+test_error1 = 1-mean(net1.classify(xTest) == tTest);
+valid_error1 = 1-mean(net1.classify(xValid) == tValid);
+train_error1 = 1-mean(net1.classify(xTrain) == tTrain);
+
+layers2 = [
+    imageInputLayer(inputSize)
+    %batchNormalizationLayer
+    fullyConnectedLayer(50)
+    reluLayer
+    fullyConnectedLayer(50)
+    reluLayer
+    fullyConnectedLayer(50)
+    reluLayer
+    fullyConnectedLayer(nClasses)
+    softmaxLayer
+    classificationLayer];
+
+options2 = trainingOptions('sgdm', ...
+           'Momentum',0.9, ...
+           'MaxEpochs',400, ...
+           'Plots','Training-Progress', ...
+           'MiniBatchSize', 8192, ...
+           'InitialLearnRate',0.003, ...
+           'Shuffle','every-epoch', ...
+           'ValidationPatience', 3, ...
+           'ValidationFrequency', 30,...
+            'ValidationData', {xValid,tValid});
+        
+net2 = trainNetwork(xTrain,tTrain,layers2,options2);
+
+test_error2 = 1-mean(net2.classify(xTest) == tTest);
+valid_error2 = 1-mean(net2.classify(xValid) == tValid);
+train_error2 = 1-mean(net2.classify(xTrain) == tTrain);
+
+layers3 = [
+    imageInputLayer(inputSize)
+    %batchNormalizationLayer
+    fullyConnectedLayer(50)
+    reluLayer
+    fullyConnectedLayer(50)
+    reluLayer
+    fullyConnectedLayer(nClasses)
+    softmaxLayer
+    classificationLayer];
+
+options3 = trainingOptions('sgdm', ...
+           'Momentum',0.9, ...
+           'MaxEpochs',400, ...
+           'Plots','Training-Progress', ...
+           'MiniBatchSize', 8192, ...
+           'InitialLearnRate',0.001, ...
+           'Shuffle','every-epoch', ...
+           'L2Regularization', 0.2, ...
+           'ValidationPatience', 3, ...
+           'ValidationFrequency', 30,...
+            'ValidationData', {xValid,tValid});
+          
+net3 = trainNetwork(xTrain,tTrain,layers3,options3);
+
+test_error3 = 1-mean(net3.classify(xTest) == tTest);
+valid_error3 = 1-mean(net3.classify(xValid) == tValid);
+train_error3 = 1-mean(net3.classify(xTrain) == tTrain);
